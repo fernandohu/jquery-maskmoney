@@ -29,17 +29,24 @@
         },
 
         unmasked : function () {
+            var $input = $(this);
+            
             return this.map(function () {
                 var value = ($(this).val() || "0"),
                     isNegative = value.indexOf("-") !== -1,
+                    precision = $input.attr('data-internal-precision'),
                     decimalPart;
-                // get the last position of the array that is a number(coercion makes "" to be evaluated as false)
-                $(value.split(/\D/).reverse()).each(function (index, element) {
-                    if(element) {
-                        decimalPart = element;
-                        return false;
-                   }
-                });
+                
+                if (precision > 0) {
+                    // get the last position of the array that is a number(coercion makes "" to be evaluated as false)
+                    $(value.split(/\D/).reverse()).each(function (index, element) {
+                        if(element) {
+                            decimalPart = element;
+                            return false;
+                       }
+                    });
+                }
+                
                 value = value.replace(/\D/g, "");
                 value = value.replace(new RegExp(decimalPart + "$"), "." + decimalPart);
                 if (isNegative) {
@@ -68,6 +75,8 @@
                 // data-* api
                 settings = $.extend({}, parameters);
                 settings = $.extend(settings, $input.data());
+                
+                $input.attr('data-internal-precision', settings.precision);
 
                 function getInputSelection() {
                     var el = $input.get(0),
